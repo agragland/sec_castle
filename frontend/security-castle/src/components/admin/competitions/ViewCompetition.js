@@ -22,9 +22,7 @@ class ViewCompetition extends React.Component {
         }
     }
 
-    getProblems = () => {
-
-    }
+    eventHandler = data => console.log(data)
 
     renderProblems = () => {
        return this.state.problems.map((problem, i) => {
@@ -32,7 +30,7 @@ class ViewCompetition extends React.Component {
                 <div key={i}>
                     <h2>{problem.problem_name} - {problem.difficulty}</h2>
                     <h3>Oracle Preview</h3>
-                    <PreviewCode file={problem.oracle_file}/>
+                    <PreviewCode file={problem.oracle_file} check_flag={true} onChange={this.eventHandler}/>
                     <h3>Source Preview</h3>
                     <PreviewCode file={problem.src_file}/>
                 </div>)

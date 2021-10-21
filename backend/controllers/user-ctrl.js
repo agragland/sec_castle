@@ -93,7 +93,7 @@ user_signin = (req, res) => {
         errors.push({ email: "invalid email" });
     }
     if (!password) {
-        errors.push({ passowrd: "required" });
+        errors.push({ password: "required" });
     }
     if (errors.length > 0) {
         return res.status(422).json({ errors: errors });

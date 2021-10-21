@@ -1,0 +1,23 @@
+
+div.code-block {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 10px;
+    overflow: auto;
+    height: 400px;
+    width: 900px;
+}
+
+.checkbox {
+    margin: 0;
+    padding: 0;
+    height:13px
+}
+
+div.checkbox {
+    display: grid;
+    grid-template-columns: auto auto;
+    text-align: left;
+    padding: 1px;
+}
+

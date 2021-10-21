@@ -34,11 +34,17 @@ class ViewProblem extends React.Component {
                 difficulty: prob.difficulty,
             }))
 
+            console.log(this.state)
+
         })
     }
 
     render()
     {
+        if(!this.state.oracle_file)
+        {
+            return <div/>
+        }
         return <div>
             <h1>View Problem</h1>
             <ul>
