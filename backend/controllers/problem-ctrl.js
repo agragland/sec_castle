@@ -4,6 +4,15 @@ const path = require('path')
 
 createProblem = (req, res) => {
     const body = req.body
+
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide an body',
+        })
+    }
+
+    //parse file information
     let filesArray = [];
     req.files.forEach((element) => {
         const file = {
@@ -18,14 +27,6 @@ createProblem = (req, res) => {
     const oracle_file = filesArray[0]
     const src_file = filesArray[1]
 
-
-    if (!body) {
-        return res.status(400).json({
-            success: false,
-            error: 'You must provide an body',
-        })
-    }
-
     const problem = new Problem(body)
 
     problem.oracle_file = oracle_file
@@ -34,6 +35,14 @@ createProblem = (req, res) => {
     if (!problem) {
         return res.status(400).json({ success: false, error: err })
     }
+
+    //parse flaw information
+    let string_arr = body.flaw_lines.split(",")
+    let line_arr = []
+    string_arr.forEach((value) => {
+        line_arr.push(parseInt(value,10))
+    })
+    problem.flaw_lines = line_arr
 
     problem
         .save()
@@ -70,18 +79,18 @@ updateProblem = async(req, res) => {
                 message: 'Problem not found'
             })
         }
+
         problem.problem_id = body.problem_id
         problem.problem_name = body.problem_name
         problem.description = body.description
-        problem.oracle_file = {
-            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-            contentType: 'text/plain'
-        }
-        problem.src_file = {
-            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-            contentType: 'text/plain'
-        }
         problem.difficulty = body.difficulty
+
+        let string_arr = body.flaw_lines.split(",")
+        let line_arr = []
+        string_arr.forEach((value) => {
+            line_arr.push(parseInt(value,10))
+        })
+        problem.flaw_lines = line_arr
 
         problem
             .save()

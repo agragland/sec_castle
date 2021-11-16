@@ -25,7 +25,7 @@ function JoinCompetition() {
             }
             else
             {
-                history.push(`/competition/${join_id}`)
+                history.push(`${path}/competition/${join_id}`)
             }
         }
         catch(err) {

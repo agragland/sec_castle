@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
 import {Switch, Route, Link, useRouteMatch, useParams} from "react-router-dom"
 import apis from "../../api";
-import PreviewCode from "../layout/PreviewCode";
 import Countdown from "react-countdown";
+import ProblemScreen from "./CompProblemScreen";
 
 function CompetitionScreen() {
 
@@ -48,30 +48,18 @@ function CompetitionScreen() {
         })
     }
 
-    const ProblemScreen = () => {
-
-        let{problem_id} = useParams()
-
-        let problem = problems.filter(prob => {
-            return prob.problem_id === problem_id
-        })
-
-
-
-        return <div>
-            <h2>{problem.problem_name}</h2>
-            <PreviewCode file={problem.oracle_file}/>
-        </div>
-
-    }
-
     const problemRouter = () => {
         return <Switch>
             <Route exact path={`${path}`}>
+                <h1>{name}</h1>
+                <p>{description}</p>
+                {renderCountdown()}
                 <p>Select a problem</p>
+                {problemNavbar()}
             </Route>
             <Route path={`${path}/:problem_id`}>
-                {ProblemScreen()}
+                {renderCountdown()}
+                <ProblemScreen problems={problems}/>
             </Route>
         </Switch>
     }
@@ -81,10 +69,7 @@ function CompetitionScreen() {
     }, [])
 
     return (<div>
-        <h1>{name}</h1>
-        <p>{description}</p>
-        {renderCountdown()}
-        {problemNavbar()}
+
         {problemRouter()}
     </div>)
 

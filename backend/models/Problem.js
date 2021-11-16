@@ -31,7 +31,10 @@ const Problem = new Schema(
         difficulty: {
             type: String,
             required: true
-        }
+        },
+        flaw_lines: [{
+            type: Number
+        }]
     },
     {
         collection: 'problems'

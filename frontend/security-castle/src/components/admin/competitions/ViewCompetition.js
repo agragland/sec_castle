@@ -72,6 +72,7 @@ class ViewCompetition extends React.Component {
                 <li>{this.state.name}</li>
                 <li>{this.state.description}</li>
                 <li>{this.state.status}</li>
+                <li>{this.state.join_id}</li>
             </ul>
             {this.renderCountdown()}
             {this.renderProblems()}

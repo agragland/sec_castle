@@ -14,7 +14,8 @@ class ViewProblem extends React.Component {
             description: "",
             oracle_file: "",
             src_file: "",
-            difficulty: ""
+            difficulty: "",
+            flaw_lines: ""
         }
     }
 
@@ -32,9 +33,10 @@ class ViewProblem extends React.Component {
                 oracle_file: prob.oracle_file,
                 src_file: prob.src_file,
                 difficulty: prob.difficulty,
+                flaw_lines: prob.flaw_lines,
             }))
 
-            console.log(this.state)
+            console.log(this.state.oracle_file)
 
         })
     }
@@ -52,6 +54,7 @@ class ViewProblem extends React.Component {
                 <li>{this.state.problem_name}</li>
                 <li>{this.state.description}</li>
                 <li>{this.state.difficulty}</li>
+                <li>{this.state.flaw_lines}</li>
             </ul>
             <h2>Oracle Preview</h2>
             <PreviewCode file={this.state.oracle_file}/>

@@ -10,6 +10,7 @@ function ProblemForm({getProblems}) {
     const [oracle_file, setOracleFile] = useState("")
     const [src_file, setSrcFile] = useState("")
     const [difficulty, setDiff] = useState("")
+    const [flaw_lines, setFlawLines] = useState([])
     const history = useHistory()
 
     async function submitProblem(e) {
@@ -24,7 +25,9 @@ function ProblemForm({getProblems}) {
             formData.append('difficulty',difficulty)
             formData.append('files', oracle_file)
             formData.append('files',src_file)
-            console.log(formData)
+            formData.append('flaw_lines',flaw_lines)
+
+            console.log(flaw_lines)
 
             await apis.submitProblem(formData)
             getProblems()
@@ -35,6 +38,8 @@ function ProblemForm({getProblems}) {
             console.log(err)
         }
     }
+
+
 
 
     return <div>
@@ -77,6 +82,11 @@ function ProblemForm({getProblems}) {
                 placeholder={"Difficulty"}
                 onChange={(e) => setDiff(e.target.value)}
                 value = {difficulty}
+            />
+            <input
+                type={"string"}
+                placeholder={"Flaw Lines"}
+                onChange={(e) => setFlawLines(e.target.value)}
             />
             <button>Submit</button>
         </form>

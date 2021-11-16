@@ -14,7 +14,8 @@ class UpdateProblem extends React.Component {
             description: "",
             oracle_file: "",
             src_file: "",
-            difficulty: ""
+            difficulty: "",
+            flaw_lines: ""
         }
     }
 
@@ -25,7 +26,6 @@ class UpdateProblem extends React.Component {
     componentDidMount = async () => {
         await apis.getProblemByProblemID(this.props.match.params.prob_id).then(probRes => {
             let prob = probRes.data.data
-            console.log(prob)
             this.setState( () => ({
                 problem_id: prob.problem_id,
                 problem_name: prob.problem_name,
@@ -33,9 +33,12 @@ class UpdateProblem extends React.Component {
                 oracle_file: prob.oracle_file,
                 src_file: prob.src_file,
                 difficulty: prob.difficulty,
+                flaw_lines: prob.flaw_lines,
             }))
 
         })
+
+
     }
 
     submitUpdate = async (e) => {
@@ -55,6 +58,10 @@ class UpdateProblem extends React.Component {
 
     render()
     {
+        if(!this.state.oracle_file)
+        {
+            return <div/>
+        }
         return <div>
             <h1>Update Problem</h1>
             <form onSubmit={this.submitUpdate}>
@@ -71,26 +78,16 @@ class UpdateProblem extends React.Component {
                     value = {this.state.description}
                 />
                 <input
-                    type={"file"}
-                    name={"files"}
-                    onChange={(e) => {
-                        this.setState( () => ({oracle_file: e.target.files[0]}))
-                    }}
-                    accept={"text/*"}
-                />
-                <input
-                    type={"file"}
-                    name={"files"}
-                    onChange={(e) => {
-                        this.setState( () => ({src_file: e.target.files[0]}))
-                    }}
-                    accept={"text/*"}
-                />
-                <input
                     type={"string"}
                     placeholder={"Difficulty"}
                     onChange={(e) => this.setState( () => ({difficulty: e.target.value}))}
                     value = {this.state.difficulty}
+                />
+                <input
+                    type={"string"}
+                    placeholder={"Flaw Lines"}
+                    onChange={(e) => this.setState( () => ({flaw_lines: e.target.value}))}
+                    value={this.state.flaw_lines}
                 />
                 <button>Submit</button>
             </form>
