@@ -16,12 +16,18 @@ function JoinCompetition() {
     async function joinCompetition(e) {
         e.preventDefault()
 
+
+
         try {
             const payload = {user}
             let res = await apis.joinComp(join_id, payload)
-            if(res.status === 400)
+            if(res.data.active === false)
             {
-
+                console.log("Competition not found or not active")
+            }
+            else if(res.data.joined === true)
+            {
+                history.push(`${path}/competition/${join_id}`)
             }
             else
             {

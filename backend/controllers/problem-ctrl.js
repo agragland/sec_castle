@@ -85,6 +85,7 @@ updateProblem = async(req, res) => {
         problem.description = body.description
         problem.difficulty = body.difficulty
 
+
         let string_arr = body.flaw_lines.split(",")
         let line_arr = []
         string_arr.forEach((value) => {

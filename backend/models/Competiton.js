@@ -30,7 +30,12 @@ const Competition = new Schema(
         problems: [{type: mongoose.Schema.Types.ObjectId, ref: 'Problem'}],
         user_flaws: [{
             user: {type: String},
-            flaw: {type: String}
+            problems: [{
+                problem_id: {type: Number, default: 0},
+                num_attempts: {type: Number, default: 3},
+                score: {type: Number, default: 0},
+                attempts: [{type: Array, default: null}]
+            }]
         }],
         status: {
             type: String,

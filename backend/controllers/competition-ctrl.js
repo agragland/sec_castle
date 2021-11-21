@@ -121,12 +121,6 @@ updateCompetition = async(req, res) => {
 }
 
 activateCompetition = async (req,res) => {
-    const body = req.body
-
-    if(!body) {
-        return res.status(400).json({ success: false, err: 'Body required'})
-    }
-
     Competition.findOne({join_id: req.params.join_id}, (err, comp) => {
         if(err) {
             return res.status(404).json({ err, message: 'Competition not found'})
@@ -154,6 +148,39 @@ activateCompetition = async (req,res) => {
 
 }
 
+endCompetition = async (req, res) => {
+    Competition.findOne({join_id: req.params.join_id}, (err, comp) => {
+        if(err) {
+            return res.status(404).json({ err, message: 'Competition not found'})
+        }
+        comp.status = "complete"
+
+        comp.save()
+            .then(() => {
+                return res.status(200).json({
+                    success: true,
+                    join_id: comp.join_id,
+                    message: 'Competition Completed'
+                })
+            })
+            .catch(err => {
+                return res.status(404).json({
+                    err,
+                    message: 'Competition could not be completed'
+                })
+            })
+    })
+}
+
+deleteCompetition = async (req, res) => {
+    await Competition.findOneAndDelete({join_id: req.params.join_id}, (err, comp) =>{
+        if(err) {
+            return res.status(400).json({success: false, error: err})
+        }
+        return res.status(200).json({success: true, message: `Competition deleted successfully`})
+    }).catch(err => console.log(err))
+}
+
 joinCompetition = async (req, res) => {
     const body = req.body
 
@@ -161,42 +188,127 @@ joinCompetition = async (req, res) => {
         return res.status(400).json({ success: false, err: 'User required'})
     }
 
-    Competition.findOne({join_id: req.params.join_id}, (err, comp) => {
+   await Competition
+       .findOne({join_id: req.params.join_id})
+       .populate('problems')
+       .exec((err, comp) => {
+            if (err) {
+                return res.status(404).json({err, message: 'Competition not found'})
+            }
+           if(comp.status !== "active") {
+               return res.status(200).json({err, active: false, message: 'Competition not active'})
+           }
+            if(comp.users.includes(body.user))
+            {
+                return res.status(200).json({err, joined: true, message: 'User already joined'})
+            }
+            else {
+                comp.users.push(body.user)
 
-        console.log(comp)
+                let flaw_array = []
+                comp.problems.forEach(problem => {
 
-        if (err) {
-            return res.status(404).json({err, message: 'Competition not found'})
-        }
-        if(comp.users.includes(body.user))
-        {
-            return res.status(400).json({err, message: 'User already joined'})
-        }
-        else {
-            comp.users.push(body.user)
-            comp
-                .save()
+                    flaw_array.push({
+                        problem_id: problem.problem_id,
+                        num_attempts: 3,
+                        score: 0,
+                        attempts: []
+                    })
+                })
+
+                let flaw_body = {
+                    user: body.user,
+                    problems: flaw_array
+                }
+                comp.user_flaws.push(flaw_body)
+
+                comp
+                    .save()
+                    .then(() => {
+                        res.status(200).json({
+                            success: true,
+                            message: 'User added'
+                        })
+                    })
+                    .catch(err => {
+                        return res.status(404).json({
+                            err,
+                            message: 'User not added'
+                        })
+                    })
+            }
+    })
+}
+
+getProbFlawInfo = async(req, res) => {
+    const body = req.body
+
+    if(!body) {
+        return res.status(400).json({ success: false, err: 'User required'})
+    }
+
+    await Competition
+        .findOne({join_id: req.params.join_id})
+        .exec((err, comp) => {
+            if (err) {
+                return res.status(404).json({err, message: 'Competition not found'})
+            }
+            let user_flaws = comp.user_flaws.find(item => item.user === body.user)
+
+            let curr_prob = user_flaws.problems.find(item => item.problem_id === body.problem_id)
+
+            return res.status(200).json({success: true, data: curr_prob})
+        })
+}
+
+updateProbFlawInfo = async (req, res) => {
+    const body = req.body
+
+    if(!body) {
+        return res.status(400).json({ success: false, err: 'User required'})
+    }
+
+    await Competition
+        .findOne({join_id: req.params.join_id})
+        .exec((err, comp) => {
+            if (err) {
+                return res.status(404).json({err, message: 'Competition not found'})
+            }
+            let user_flaws = comp.user_flaws.find(item => item.user === body.user)
+
+            let curr_prob = user_flaws.problems.find(item => item.problem_id === body.problem_id)
+
+            curr_prob.attempts = body.attempts
+            curr_prob.score = body.score
+
+            comp.save()
                 .then(() => {
-                    res.status(200).json({
+                    return res.status(200).json({
                         success: true,
-                        message: 'User added'
+                        attempts: curr_prob.attempts,
+                        score: curr_prob.score,
+                        message: 'Competition updated'
                     })
                 })
                 .catch(err => {
                     return res.status(404).json({
                         err,
-                        message: 'User not added'
+                        message: 'Competition not updated'
                     })
                 })
-        }
-    })
+        })
+
 }
 
 module.exports = {
     createCompetition,
     updateCompetition,
     activateCompetition,
+    endCompetition,
     joinCompetition,
+    deleteCompetition,
     getCompetitions,
-    getCompByJoinCode
+    getCompByJoinCode,
+    getProbFlawInfo,
+    updateProbFlawInfo
 }

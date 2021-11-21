@@ -1,11 +1,8 @@
 import React from "react";
 import {withRouter} from "react-router"
 import apis from "../../../api";
-import PreviewCode from "../../layout/PreviewCode";
-import Countdown from "react-countdown";
 
-class ViewCompetition extends React.Component {
-
+class ViewResults extends React.Component {
     constructor(props) {
         super(props);
 
@@ -18,31 +15,30 @@ class ViewCompetition extends React.Component {
             problems: [],
             user_flaws: [],
             status: "",
-            deadline: "",
+            deadline: ""
         }
     }
+    renderResults = () => {
+        function renderProblems(problems) {
+            return problems.map((problem, i) => {
+                return (
+                    <div key={i}>
+                        <p>Problem {problem.problem_id} - Score: {problem.score} - Attempts: {problem.num_attempts-problem.attempts.length} </p>
+                    </div>
+                )
+            })
+        }
 
-    renderProblems = () => {
-       return this.state.problems.map((problem, i) => {
+        return this.state.user_flaws.map((user, i) => {
             return (
                 <div key={i}>
-                    <h2>{problem.problem_name} - {problem.difficulty}</h2>
-                    <h3>Oracle Preview</h3>
-                    <PreviewCode file={problem.oracle_file}/>
-                    <h3>Source Preview</h3>
-                    <PreviewCode file={problem.src_file}/>
-                </div>)
-
+                    <h2>
+                        {user.user}
+                    </h2>
+                    {renderProblems(user.problems)}
+                </div>
+            )
         })
-    }
-
-    renderCountdown = () => {
-        if(this.state.deadline)
-        {
-            return <div>
-                <p>Time Remaining <Countdown date={this.state.deadline}/></p>
-            </div>
-        }
     }
 
     componentDidMount = async () => {
@@ -62,21 +58,17 @@ class ViewCompetition extends React.Component {
         })
     }
 
-    render()
-    {
+    render = () => {
         return <div>
-            <h1>View Competition</h1>
+            <h1>View Results</h1>
             <ul>
                 <li>{this.state.name}</li>
                 <li>{this.state.description}</li>
-                <li>{this.state.status}</li>
-                <li>{this.state.join_id}</li>
             </ul>
-            {this.renderCountdown()}
-            {this.renderProblems()}
+            {this.renderResults()}
         </div>
     }
 
 }
 
-export default withRouter(ViewCompetition)
+export default withRouter(ViewResults)
